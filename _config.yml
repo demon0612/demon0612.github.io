@@ -96,7 +96,8 @@ disqus:
 # https://imsun.net/posts/gitment-introduction/
 gitment:
     owner: demon0612
-    repo: blog-comments
+    #repo: blog-comments
+    repo: demon0612.github.io
     oauth:
         client_id: 95ac22bb4f1a68ee1175
         client_secret: 726be801494caa310f3f7314210e3815e290b21f
