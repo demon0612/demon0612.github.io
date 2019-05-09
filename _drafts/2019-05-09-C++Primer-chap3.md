@@ -1,16 +1,16 @@
 ---
 layout: post
-title: C++ Primer 第二章
+title: C++ Primer 第三章
 categories: C++ Primer
 description: C++ Primer
 keywords: C++, Primer
 ---
 
-变量和基本类型
+字符串、向量和数组
 
 ---
 
-## 第二章
+## 第三章
 
 ### 基本内置类型
 
