@@ -1,7 +1,7 @@
 ---
 layout: post
 title: C++ Primer 第二章
-categories: C++ Primer
+categories: C++
 description: C++ Primer
 keywords: C++, Primer
 ---
