@@ -1,16 +1,15 @@
 ---
 layout: post
-title: C++ Primer 第五章
+title: C++ Primer 第六章
 categories: C++
 description: C++ Primer
 keywords: C++, Primer
 ---
 
-语句
+函数
 
 ---
 
-## 第五章
+## 第六章
 
-### 基础
-
+### 条件语句
