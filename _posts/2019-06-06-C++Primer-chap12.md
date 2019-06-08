@@ -130,18 +130,15 @@ sp.reset();
 allocator<string> alloc;
 auto const p = alloc.allocate(n);//分配n个未初始化的string
 auto q=p;
-
 //构造
 alloc.construct(q++);//*q为空字符串
 alloc.construct(q++,10,'c');
 alloc.construct(q++,"hi");
-
 //析构
 while(q!=p)
 {
     alloc.destroy(--q);
 }
-
 //释放
 alloc.deallocate(p,n);
 ```
