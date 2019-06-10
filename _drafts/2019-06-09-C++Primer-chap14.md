@@ -109,4 +109,120 @@ p.operator++();//调用前置版本的operator++
 
 - 函数调用运算符必须是成员函数。一个类可以定义多个不同版本的调用运算符，相互之间应该在参数数量或类型上有所区别。
 
-- 接下来是14.8.2
+- 标准库在functional头文件中定义了一组算术运算符、关系运算符和逻辑运算符，例如plus执行加操作，modules类定义二元取余(%)操作，equal_to类执行==。
+```c++
+plus<int> intAdd;//执行int加法的函数
+negate<int> intNegate;//对int取反
+int sum = intAdd(10,20);// sum = 30
+sum = intNegate(intAdd(10,20));//sum = -30
+sum = intAdd(10,intNegate(10));//sum = 0 
+```
+可以直接在算法中使用标准库函数。例如，默认情况排序算法使用operator<将序列按照升序排列。如果要执行降序，可以传入一个greater类型：
+```c++
+sort(svec.begin(),svec.end(),greate<string>());
+```
+sort如果是对指针进行排序，将会得到错误结果，但是将指针传入标准库函数却可以：
+```c++
+vector<string*> nameTable;
+sort(nameTable.begin(),nameTable.end(),[](string* a, string*b){return a<b;});//错误
+sort(nameTabel.begin(),nameTable.end(),less<string*>());
+```
+关联容器使用less<key_type>对元素进行排序，可以定义一个指针的set或者在map中使用定义作为关键字而无须直接声明less。
+
+- 调用形式指明了调用返回的类型以及传递给调用的实参类型。一种调用类型对应一个函数类型，例如：
+```c++
+int (int,int)
+```
+是一个函数类型，接受两个int，返回一个int。
+
+不同该类型可能就有相同的调用形式：
+```c++
+//普通函数
+int add(int i,int j) {return i+j;}
+//lambda，产生一个未命名的函数对象类
+auto mod = [](int i,int,j) {return i%j;};
+//函数对象类
+struct divide
+{
+    int operator() (int denominator,int divisor)
+    {
+        return denominator/divisor;
+    }
+};
+```
+以上这三个可调用对象，尽管类型不同，但是共享同一种调用形式。如果想用函数表用来存储这些可调用对象的指针，则可以使用map，定义如下：
+```c++
+map<string,int(*)(int,int)> binops;
+binops.insert({"+",add});//OK
+binops.insert({"%",mod});//错误的，因为mod不是一个函数指针。这时候需要用到标准库function类型
+```
+
+function定义在functional头文件中。function是一个模板。则上面的例子可以写成：
+```c++
+function<int(int,int)> f1= add;
+function<int(int,int)> f2= divide();
+function<int(int,int)> f3= [](int i,int j){return i*j;};
+```
+则map可以定义为：
+```c++
+map<string,function<int(int,int)> binops = {
+    {"+",add},
+    {"-",std::minus<int>()},
+    {"/",divide()},
+    {"*",[](int i,int j) {return i*j;}},
+    {"%",mod}
+};
+```
+
+### 重载、类型转换与运算符
+
+- 转换构造函数和类型转换运算符共同决定了类类型转换，这样的转换有时被称作用户定义的类型转换。
+
+- 类型转换运算符是类的一种特殊成员函数，声明如下：
+```c++
+operator type() const;
+```
+其中type表示某种类型。类型转换运算符可以面向任意类型(除了void)进行定义，只要改类型能作为函数的返回类型。因此，不允许转换成数组或者函数类型，单允许转换成指针（包括数组指针以及函数指针）或者引用类型。
+
+- 一个类型转换函数必须是类的成员函数，不能声明返回类型，形参列表页必须为空，类型转换函数通常是const的。
+
+```c++
+class SmallInt
+{
+    public:
+    SmallInt(int i=0):val(i)
+    {
+        if(i<0|| i>255)
+            throw std::out_of_range("Bad SmallInt value");
+    }
+    operator int() const {return val;}
+
+    private:
+    std::size_t val;
+};
+```
+则如下调用：
+```c++
+SmallInt si;
+si = 4;//将4隐式转换成SmallInt，然后调用SmallInt::operator==
+si + 3;//首先将si隐式转换成int，然后执行整数加法
+```
+
+- 为了防止异常类型转化，C++11新标准引入了显式的类型转换运算符,
+```c++
+classs SmallInt
+{
+    public:
+    explicit operator int() const {return val;}//显式构造函数
+}
+SmallInt si = 3; //正确，SmallInt的构造函数不是显式的
+si + 3;//错误，类无法进行隐式转化
+static_cast<int>(si)+3;//正确，显式类型转换
+```
+以上情况存在一个例外，如果表达式被用作条件，则编译器会将显式的类型转换自动应用于它。
+
+- 向bool的类型转换通常用在条件部分，因此operatro bool一般定义成explicit的。
+
+- 14.9.2
+
+
