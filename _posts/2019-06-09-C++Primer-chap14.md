@@ -223,6 +223,46 @@ static_cast<int>(si)+3;//正确，显式类型转换
 
 - 向bool的类型转换通常用在条件部分，因此operatro bool一般定义成explicit的。
 
-- 14.9.2
+- 通常情况下，不要为类定义相同的类型转换，也不要在类中定义两个及两个以上转换源或转换目标是算术类型的转换。例如：
+```c++
+struct B;
+struct A
+{
+    A()=default;
+    A(const B&);//把B转化成A
+};
+struct B
+{
+    operator A() const;//把一个B转换成A
+};
+```
+则如下调用错误：
+```c++
+A f(const A&);
+B b;
+A a = f(b);//二义性错误：是调用f(B::operator A())，还是f(A::A(const B&))?
+```
+可以显式调用：
+```c++
+A a1 = f(b.operator A());
+A a2 = f(A(b));
+```
 
-
+- 如果对同一个类既提供了转换目标是算术类型的类型转换，也提供了重载的运算符，则会遇到重载运算符与内置运算符的二义性问题：
+```c++
+class SmallInt
+{
+    friend SmallInt operator+(const SmallInt&,const SmallInt&);
+public:
+    SmallInt(int =0);
+    operator int() const{return val;}
+private:
+    std::size_t val;
+};
+```
+则如下调用错误：
+```c++
+SmallInt s1,s2;
+SmallInt s3 = s1+s2;//OK，使用重载的+
+int i = s3+0;//二义性，是将0转换成SmallInt，还是将s3转换成int？
+```
