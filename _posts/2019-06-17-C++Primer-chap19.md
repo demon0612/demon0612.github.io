@@ -100,6 +100,26 @@ enum class open_modes;//限定作用域的枚举类型可以使用默认成员�
 
 ### union：一种节省空间的类
 
+- 一个union可以有多个数据成员，但是在任意时刻只有一个数据成员可以有值。当给union的某个成员赋值以后，该union的其他成员就变成未定义的状态了。
+
+- union不能含有引用类型的成员。
+
+- C++11中，含有构造函数或者析构函数的类类型也可以作为union的成员。union可以为其成员指定public、protected和private等保护标记。默认情况下，union的成员都是共有的，这一点与struct相似。
+
+- 在使用union时，必须清楚地知道当前存储在union中的值到底是什么类型。如果使用了错误的数据成员或者为错误的数据成员赋值，则程序可能出现崩溃。
+
+- 匿名union是一个未命名的union，一旦定义了一个匿名union，编译器就自动地为该union创建一个未命名的对象：
+```c++
+union {         //匿名union
+    char cval;
+    int ival;
+    double dval;
+};
+cval='c';
+ival=42;//之前的cval就无法使用了
+```
+
+- 匿名union不能包含受保护的成员或者私有成员，也不能定义成员函数。
 
 
 
