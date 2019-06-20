@@ -57,8 +57,33 @@ bitset<32> bitvec6(str,str.size()-4);//使用最后四位字符
 
 ### 正则表达式
 
+- C++正则表达式库(RE库)，Re库定义在头文件regex中。
+- 一个例子，检查拼写规则："i除非在c之后，否则必须在e之前"的单词
+```c++
+string pattern("[^c]ei");//查找不在字符c之后的字符串ei
+pattern = "[[:alpha:]]*"+pattern+"[[:alpha:]]*";
+regex r(pattern);//构造一个用于查找模式的regex
+smatch results;//定义一个对象保存搜索结果
+string test_str="receipt freind theif receive";
+if(regex_search(test_str,results,r))
+{
+    cout << results.str() << endl;
+}
+```
+默认情况下，regex使用的正则表达式语言是ECMAScript。在ECMAScript中，模式[[::alpha:]]匹配任意字符，符号+和*分别表示"一个或者多个"或者”零个或者多个“匹配。
 
+- 正则表达式的语言可以选择ECMAScript、basic(POSIX基本)、extended(POSIX扩展)、awk、grep、egrep的语法
 
+- 一个正则表达式的语法是否正确是在运行时解析的。
+
+- 输入序列和使用正则表达式类的对应关系如下：
+
+输入序列|正则表达式类
+:--: | :--:
+string|regex、smatch、ssub_match和sregex_iterator
+const char*|regex、cmatch、csub_match和cregex_iterator
+wstring|wregex、wsmatch、wssub_match和wsregex_iterator
+const wchar_t*|wregex、wcmatch、wcsub_match和wcregex_iterator
 
 
 
