@@ -85,20 +85,28 @@ const char*|regex、cmatch、csub_match和cregex_iterator
 wstring|wregex、wsmatch、wssub_match和wsregex_iterator
 const wchar_t*|wregex、wcmatch、wcsub_match和wcregex_iterator
 
+- 如果想得到正则表达式的所有匹配，需要使用迭代器。将一个sregex_iterator绑定到string和一个regex对象，迭代器自动定位到给定string的第一个匹配位置，递增迭代器查找下一个。在上面的例子进行改进：
+```c++
+string pattern("[^c]ei");//查找不在字符c之后的字符串ei
+pattern = "[[:alpha:]]*"+pattern+"[[:alpha:]]*";
+regex r(pattern,regex::icase);//构造一个用于查找模式的regex，匹配时忽略大小写
+for(sregex_iterator it(file.begin(),file.end(),r),end_it;it !=end_it;++it)
+{
+    cout << it->str() << endl;
+}
+```
+其中end_it是一个空的sregex_iterator，起到了尾迭代器作用。
 
+- 匹配类型有两个名为prefix和suffix的成员，分别返回表示输入序列中当前匹配之前和之后不分的ssub_match对象。一个ssub_match对象有两个名为str和length的成员，分别返回匹配的string和该string的大小。
 
+- 一个子表达式是模式的一部分，本身也有意义。
+```c++
+regex r("([[:alnum:]]+)\\.(cpp|cxx|cc)$",regex::icase);
+```
+其中([[:alnum:]]+)匹配一个活多个字符的序列，(cpp|cxx|cc)匹配文件名。
+regex_search得到的smatch的str是一个数组，第一个子匹配位置为0，表示整个模式对应的匹配，随后是每个子表达式对应的匹配 。例如foo.cpp，则results.str(0)保存foo.cpp，results.str(1)保存foo，results(2)保存cpp。
 
-
-
-
-
-
-
-
-
-
-
-
+- regex_replace可以在输入序列中查找并替换一个正则表达式。
 
 ### 随机数
 
